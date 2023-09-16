@@ -1,0 +1,258 @@
+version: '3'
+
+services:
+
+  nginx:
+    container_name: nginx
+    image: nginx:latest
+    hostname: docker-nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - var_www:${DIST_VAR_WWW}
+      - ./volumes/etc/nginx/conf.d:/etc/nginx/conf.d:cached
+      - ./volumes/etc/ssl:/etc/ssl/docker:cached
+      - ./volumes/var/log/nginx:/var/log/nginx:delegated
+    depends_on:
+      - varnish
+      - php74
+      - php81
+    networks:
+      - internal
+
+  varnish:
+    container_name: varnish
+    image: varnish:6.6.2
+    hostname: docker-varnish
+    ports:
+      - "6081:6081"
+      - "6082:6082"
+    user: varnish
+    volumes:
+      - ./volumes/etc/default/varnish:/etc/default/varnish:cached
+      - ./volumes/etc/varnish/magento2.vcl:/etc/varnish/default.vcl:cached
+      - ./volumes/usr/local/bin/docker-varnish-entrypoint:/usr/local/bin/docker-varnish-entrypoint:cached
+      - ./volumes/var/lib/varnish:/var/lib/varnish:delegated
+      - ./volumes/var/log/varnish:/var/log/varnish:delegated
+    restart: always
+    networks:
+      - internal
+
+  php74:
+    container_name: php74
+    build:
+      context: ./images/php74
+    hostname: docker-php74
+    volumes:
+      - root_composer:${DIST_ROOT_COMPOSER}:delegated
+      - var_www:${DIST_VAR_WWW}
+      - ${VOL_CONFIG_PHP74}:${DIST_CONFIG_PHP}:cached
+      - ${VOL_ETC_INPUTRC}:${DIST_ETC_INPUTRC}:cached # Autocomplete functionality to the Terminal
+      - ${VOL_LOG_BLACKFIRE}:${DIST_LOG_BLACKFIRE}:delegated
+      - ${VOL_LOG_XDEBUG}:${DIST_LOG_XDEBUG}:delegated
+      - ${VOL_ROOT_BASH_HISTORY_PHP}:${DIST_ROOT_BASH_HISTORY}:delegated
+      - ${VOL_ROOT_BLACKFIRE}:${DIST_ROOT_BLACKFIRE}:delegated
+#      - $SSH_AUTH_SOCK:/ssh-agent:cached # Forward local machine SSH key to the Docker
+      - ~/.ssh:/root/.ssh:cached
+    environment:
+      COMPOSER_MEMORY_LIMIT: -1
+      PHP_IDE_CONFIG: "serverName=Docker"
+      SSH_AUTH_SOCK: /ssh-agent
+    depends_on:
+      - mysql
+      - elasticsearch7
+      - redis
+      - rabbitmq
+    networks:
+      - internal
+
+  php81:
+    container_name: php81
+    build:
+      context: ./images/php81
+    hostname: docker-php81
+    volumes:
+      - root_composer:${DIST_ROOT_COMPOSER}:delegated
+      - var_www:${DIST_VAR_WWW}
+      - ${VOL_CONFIG_PHP81}:${DIST_CONFIG_PHP}:cached
+      - ${VOL_ETC_INPUTRC}:${DIST_ETC_INPUTRC}:cached # Autocomplete functionality to the Terminal
+      - ${VOL_LOG_BLACKFIRE}:${DIST_LOG_BLACKFIRE}:delegated
+      - ${VOL_LOG_XDEBUG}:${DIST_LOG_XDEBUG}:delegated
+      - ${VOL_ROOT_BASH_HISTORY_PHP}:${DIST_ROOT_BASH_HISTORY}:delegated
+      - ${VOL_ROOT_BLACKFIRE}:${DIST_ROOT_BLACKFIRE}:delegated
+#      - $SSH_AUTH_SOCK:/ssh-agent:cached # Forward local machine SSH key to the Docker
+      - ~/.ssh:/root/.ssh:cached
+    environment:
+      COMPOSER_MEMORY_LIMIT: -1
+      PHP_IDE_CONFIG: "serverName=Docker"
+      SSH_AUTH_SOCK: /ssh-agent
+    depends_on:
+      - mysql
+      - elasticsearch7
+      - redis
+      - rabbitmq
+    networks:
+      - internal
+
+#  blackfire:
+#    container_name: blackfire
+#    image: blackfire/blackfire:latest
+#    hostname: docker-blackfire
+#    ports: ["8307"]
+#    environment:
+#      BLACKFIRE_CLIENT_ID: ${BLACKFIRE_CLIENT_ID}
+#      BLACKFIRE_CLIENT_TOKEN: ${BLACKFIRE_CLIENT_TOKEN}
+#      BLACKFIRE_SERVER_ID: ${BLACKFIRE_SERVER_ID}
+#      BLACKFIRE_SERVER_TOKEN: ${BLACKFIRE_SERVER_TOKEN}
+#    networks:
+#      - internal
+
+  mysql:
+    container_name: mysql
+    image: mysql:8
+    hostname: docker-mysql
+    ports:
+      - "3366:3306"
+    user: mysql
+    volumes:
+      - mysql_db:${DIST_MYSQL_DB}:delegated
+      - ./upload:/upload:cached
+      - ./volumes/etc/mysql/conf.d:/etc/mysql/conf.d:cached
+    environment:
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_ROOT_USER: ${MYSQL_ROOT_USER}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+    networks:
+      - internal
+
+  phpmyadmin:
+    container_name: phpmyadmin
+    image: phpmyadmin:latest
+    hostname: docker-phpmyadmin
+    ports:
+      - "8090:80"
+    environment:
+      PMA_HOST: mysql
+      PMA_PORT: 3306
+      PMA_ARBITRARY: 1
+    depends_on:
+      - mysql
+    networks:
+      - internal
+
+  elasticsearch7:
+    container_name: elasticsearch7
+    build: ./images/elasticsearch7
+    hostname: docker-elasticsearch7
+    environment:
+      - cluster.name=docker-cluster
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms2048m -Xmx2048m"
+      - "discovery.type=single-node"
+    volumes:
+      - elasticsearch7_db:/usr/share/elasticsearch/data:delegated
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    ports:
+      - "9207:9200"
+    user: elasticsearch
+    networks:
+      - internal
+
+  redis:
+    container_name: redis
+    image: redis:latest
+    hostname: docker-redis
+    ports:
+      - "6389:6379"
+    user: redis
+    volumes:
+      - redis_db:/data:delegated
+    networks:
+      - internal
+
+  rabbitmq:
+    container_name: rabbitmq
+    image: rabbitmq:3.11.10-management
+    hostname: docker-rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS}
+    user: rabbitmq
+    volumes:
+      - rabbitmq_db:${DIST_RABBITMQ_DB}:delegated
+    networks:
+      - internal
+
+  mailcatcher:
+    container_name: mailcatcher
+    image: dockage/mailcatcher:latest
+    hostname: docker-mailcatcher
+    ports:
+      - "1080:1080"
+      - "1025:1025"
+    networks:
+      - internal
+
+  node6:
+    container_name: node6
+    build: ./images/node6
+    hostname: docker-node6
+    volumes:
+      - var_www:${DIST_VAR_WWW}
+
+  node12:
+    container_name: node12
+    build: ./images/node12
+    hostname: docker-node12
+    volumes:
+      - var_www:${DIST_VAR_WWW}
+
+volumes:
+
+  elasticsearch7_db:
+
+  mysql_db:
+    driver: local
+    driver_opts:
+      type: none
+      device: $PWD/${VOL_MYSQL_DB}
+      o: bind
+
+  rabbitmq_db:
+    driver: local
+    driver_opts:
+      type: none
+      device: $PWD/${VOL_RABBITMQ_DB}
+      o: bind
+
+  redis_db:
+
+  root_composer:
+    driver: local
+    driver_opts:
+      type: none
+      device: $PWD/${VOL_ROOT_COMPOSER}
+      o: bind
+  
+  var_www:
+    driver: local
+    driver_opts:
+      type: none
+      device: $PWD/${VOL_VAR_WWW}
+      o: bind
+
+networks:
+  
+  internal:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 192.168.220.0/28 # 192.168.220.1 - 192.168.220.14
