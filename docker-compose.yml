@@ -95,19 +95,6 @@ services:
     networks:
       - internal
 
-#  blackfire:
-#    container_name: blackfire
-#    image: blackfire/blackfire:latest
-#    hostname: docker-blackfire
-#    ports: ["8307"]
-#    environment:
-#      BLACKFIRE_CLIENT_ID: ${BLACKFIRE_CLIENT_ID}
-#      BLACKFIRE_CLIENT_TOKEN: ${BLACKFIRE_CLIENT_TOKEN}
-#      BLACKFIRE_SERVER_ID: ${BLACKFIRE_SERVER_ID}
-#      BLACKFIRE_SERVER_TOKEN: ${BLACKFIRE_SERVER_TOKEN}
-#    networks:
-#      - internal
-
   mysql:
     container_name: mysql
     image: mysql:8
