@@ -6,6 +6,8 @@ RUN pecl install xdebug-3.2.1 mcrypt
 RUN docker-php-ext-configure gd --with-freetype --with-jpeg
 RUN docker-php-ext-install pdo_mysql mysqli intl dom mbstring gd soap zip xsl bcmath exif bz2 opcache sockets \
     && docker-php-ext-enable xdebug mcrypt
+RUN docker-php-ext-configure pcntl --enable-pcntl \
+  && docker-php-ext-install pcntl
 # Composer:
 ENV COMPOSER_ALLOW_SUPERUSER 1
 RUN curl -sS https://getcomposer.org/installer | php -- \

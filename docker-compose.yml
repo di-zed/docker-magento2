@@ -53,12 +53,12 @@ services:
       - ${VOL_LOG_XDEBUG}:${DIST_LOG_XDEBUG}:delegated
       - ${VOL_ROOT_BASH_HISTORY_PHP}:${DIST_ROOT_BASH_HISTORY}:delegated
       - ${VOL_ROOT_BLACKFIRE}:${DIST_ROOT_BLACKFIRE}:delegated
-#      - $SSH_AUTH_SOCK:/ssh-agent:cached # Forward local machine SSH key to the Docker
+      - ${VOL_SSH_AUTH_SOCK}:${DIST_SSH_AUTH_SOCK}:cached # Forward local machine SSH key to the Docker
       - ~/.ssh:/root/.ssh:cached
     environment:
       COMPOSER_MEMORY_LIMIT: -1
       PHP_IDE_CONFIG: "serverName=Docker"
-      SSH_AUTH_SOCK: /ssh-agent
+      SSH_AUTH_SOCK: ${VOL_SSH_AUTH_SOCK}
     depends_on:
       - mysql
       - elasticsearch7
@@ -81,12 +81,12 @@ services:
       - ${VOL_LOG_XDEBUG}:${DIST_LOG_XDEBUG}:delegated
       - ${VOL_ROOT_BASH_HISTORY_PHP}:${DIST_ROOT_BASH_HISTORY}:delegated
       - ${VOL_ROOT_BLACKFIRE}:${DIST_ROOT_BLACKFIRE}:delegated
-#      - $SSH_AUTH_SOCK:/ssh-agent:cached # Forward local machine SSH key to the Docker
+      - ${VOL_SSH_AUTH_SOCK}:${DIST_SSH_AUTH_SOCK}:cached # Forward local machine SSH key to the Docker
       - ~/.ssh:/root/.ssh:cached
     environment:
       COMPOSER_MEMORY_LIMIT: -1
       PHP_IDE_CONFIG: "serverName=Docker"
-      SSH_AUTH_SOCK: /ssh-agent
+      SSH_AUTH_SOCK: ${VOL_SSH_AUTH_SOCK}
     depends_on:
       - mysql
       - elasticsearch7
