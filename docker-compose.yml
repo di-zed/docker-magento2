@@ -3,7 +3,7 @@ version: '3'
 services:
 
   nginx:
-    container_name: nginx
+    container_name: nginx-m2
     image: nginx:latest
     hostname: docker-nginx
     ports:
@@ -22,7 +22,7 @@ services:
       - internal
 
   varnish:
-    container_name: varnish
+    container_name: varnish-m2
     image: varnish:6.6.2
     hostname: docker-varnish
     ports:
@@ -40,7 +40,7 @@ services:
       - internal
 
   php74:
-    container_name: php74
+    container_name: php74-m2
     build:
       context: ./images/php74
     hostname: docker-php74
@@ -55,10 +55,12 @@ services:
       - ${VOL_ROOT_BLACKFIRE}:${DIST_ROOT_BLACKFIRE}:delegated
       - ${VOL_SSH_AUTH_SOCK}:${DIST_SSH_AUTH_SOCK}:cached # Forward local machine SSH key to the Docker
       - ~/.ssh:/root/.ssh:cached
+      - ./mounted:/home/mounted
     environment:
       COMPOSER_MEMORY_LIMIT: -1
       PHP_IDE_CONFIG: "serverName=Docker"
       SSH_AUTH_SOCK: ${VOL_SSH_AUTH_SOCK}
+    working_dir: ${DIST_VAR_WWW}
     depends_on:
       - mysql
       - elasticsearch7
@@ -68,7 +70,7 @@ services:
       - internal
 
   php81:
-    container_name: php81
+    container_name: php81-m2
     build:
       context: ./images/php81
     hostname: docker-php81
@@ -83,10 +85,12 @@ services:
       - ${VOL_ROOT_BLACKFIRE}:${DIST_ROOT_BLACKFIRE}:delegated
       - ${VOL_SSH_AUTH_SOCK}:${DIST_SSH_AUTH_SOCK}:cached # Forward local machine SSH key to the Docker
       - ~/.ssh:/root/.ssh:cached
+      - ./mounted:/home/mounted
     environment:
       COMPOSER_MEMORY_LIMIT: -1
       PHP_IDE_CONFIG: "serverName=Docker"
       SSH_AUTH_SOCK: ${VOL_SSH_AUTH_SOCK}
+    working_dir: ${DIST_VAR_WWW}
     depends_on:
       - mysql
       - elasticsearch7
@@ -96,25 +100,29 @@ services:
       - internal
 
   mysql:
-    container_name: mysql
-    image: mysql:8
+    container_name: mysql-m2
+    build:
+      context: ./images/mysql
     hostname: docker-mysql
     ports:
       - "3366:3306"
-    user: mysql
+#    user: mysql
     volumes:
       - mysql_db:${DIST_MYSQL_DB}:delegated
-      - ./upload:/upload:cached
+      - ${VOL_ETC_INPUTRC}:${DIST_ETC_INPUTRC}:cached # Autocomplete functionality to the Terminal
+      - ${VOL_ROOT_BASH_HISTORY_MYSQL}:${DIST_ROOT_BASH_HISTORY}:delegated
+      - ./mounted:/home/mounted
       - ./volumes/etc/mysql/conf.d:/etc/mysql/conf.d:cached
     environment:
       MYSQL_DATABASE: ${MYSQL_DATABASE}
       MYSQL_ROOT_USER: ${MYSQL_ROOT_USER}
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+    working_dir: /home/mounted
     networks:
       - internal
 
   phpmyadmin:
-    container_name: phpmyadmin
+    container_name: phpmyadmin-m2
     image: phpmyadmin:latest
     hostname: docker-phpmyadmin
     ports:
@@ -129,7 +137,7 @@ services:
       - internal
 
   elasticsearch7:
-    container_name: elasticsearch7
+    container_name: elasticsearch7-m2
     build: ./images/elasticsearch7
     hostname: docker-elasticsearch7
     environment:
@@ -150,7 +158,7 @@ services:
       - internal
 
   redis:
-    container_name: redis
+    container_name: redis-m2
     image: redis:latest
     hostname: docker-redis
     ports:
@@ -162,7 +170,7 @@ services:
       - internal
 
   rabbitmq:
-    container_name: rabbitmq
+    container_name: rabbitmq-m2
     image: rabbitmq:3.11.10-management
     hostname: docker-rabbitmq
     ports:
@@ -178,7 +186,7 @@ services:
       - internal
 
   mailcatcher:
-    container_name: mailcatcher
+    container_name: mailcatcher-m2
     image: dockage/mailcatcher:latest
     hostname: docker-mailcatcher
     ports:
@@ -188,14 +196,14 @@ services:
       - internal
 
   node6:
-    container_name: node6
+    container_name: node6-m2
     build: ./images/node6
     hostname: docker-node6
     volumes:
       - var_www:${DIST_VAR_WWW}
 
   node12:
-    container_name: node12
+    container_name: node12-m2
     build: ./images/node12
     hostname: docker-node12
     volumes:

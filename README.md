@@ -7,8 +7,9 @@
 **The most interesting folders:**
 
 1. **./images** The folder with custom Docker Images.
-2. **./upload** The folder that can be shared between other containers, for example, for MySQL container to migrate database.
-3. **./volumes** The folder with Docker Volumes in Linux structure.
+2. **./local** Folder for local changes. It can be convenient to use it together with the docker-compose.local.yml file.
+3. **./mounted** A folder for exchanging files between the PC and the Docker container.
+4. **./volumes** The folder with Docker Volumes in Linux structure.
    1. **./volumes/etc/nginx/conf.d** Nginx configuration files for projects.
    2. **./volumes/etc/ssl** SSL certificates for projects.
    3. **./volumes/var/log** Logs from different services.
@@ -17,10 +18,11 @@
 ## Setup
 
 1. Copy the *./.env.sample* file to the *./.env*. Check it and edit some parameters if needed.
-2. Copy the *./volumes/root/bash_history/php.sample* file to the *./volumes/root/bash_history/php* for saving command history in the PHP containers.
-3. **Optional.** Copy the *./volumes/root/.blackfire.ini.sample* file to the *./volumes/root/.blackfire.ini* for configuration Blackfire if you have plans to use it.
-4. **Optional.** Copy the *./docker-compose.local.yml.sample* file to the *./docker-compose.local.yml* and edit it, if you need some changes in the Docker configurations locally.
-5. **Optional.** If your want to have local domains for PhpMyAdmin, RabbitMQ, and MailCatcher, you need to add the data to you local */etc/hosts* file, like:
+2. Copy the *./volumes/root/bash_history/mysql.sample* file to the *./volumes/root/bash_history/mysql* for saving command history in the MySQL container.
+3. Copy the *./volumes/root/bash_history/php.sample* file to the *./volumes/root/bash_history/php* for saving command history in the PHP containers.
+4. **Optional.** Copy the *./volumes/root/.blackfire.ini.sample* file to the *./volumes/root/.blackfire.ini* for configuration Blackfire if you have plans to use it.
+5. **Optional.** Copy the *./docker-compose.local.yml.sample* file to the *./docker-compose.local.yml* and edit it, if you need some changes in the Docker configurations locally.
+6. **Optional.** If your want to have local domains for PhpMyAdmin, RabbitMQ, and MailCatcher, you need to add the data to you local */etc/hosts* file, like:
     ```code
     127.0.0.1 pma.loc
     127.0.0.1 rabbitmq.loc
@@ -53,10 +55,10 @@ docker-compose stop
 ## Project setup
 
 1. Copy the dir with the project to the *./volumes/var/www/project-name* folder.
-2. Copy the database dump to the *./upload* folder.
+2. Copy the database dump to the *./mounted* folder.
 3. Go inside the MySQL container, create the database, and copy your dump to the database.
     ```code
-    mysql -u root -p project_database < /upload/project_dump.sql
+    mysql -u root -p project_database < /home/mounted/project_dump.sql
     ```
 4. Generate an SSL certificate if you have plans to use Varnish or need it for other aims.
     ```code
@@ -213,7 +215,7 @@ docker-compose exec php81 /bin/bash
 - Port: 3306
 - User: {see .env file}
 - Password: {see .env file}
-- Folder for dumps: ./upload
+- Folder for dumps: ./mounted (/home/mounted)
 
 ```code
 docker-compose exec mysql /bin/bash

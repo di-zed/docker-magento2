@@ -29,7 +29,8 @@ Thumbs.db
 # Docker project
 .env
 docker-compose.local.yml
-upload/*
+local/*
+mounted/*
 volumes/etc/nginx/conf.d/*
 !volumes/etc/nginx/conf.d/samples
 !volumes/etc/nginx/conf.d/default.conf
@@ -40,6 +41,7 @@ volumes/etc/ssl/certs/*
 volumes/etc/ssl/private/*
 volumes/root/.blackfire.ini
 volumes/root/.composer/*
+volumes/root/bash_history/mysql
 volumes/root/bash_history/php
 volumes/var/lib/mysql/*
 volumes/var/lib/rabbitmq/*
