@@ -42,6 +42,7 @@ volumes/etc/ssl/private/*
 volumes/root/.blackfire.ini
 volumes/root/.composer/*
 volumes/root/bash_history/mysql
+volumes/root/bash_history/node
 volumes/root/bash_history/php
 volumes/var/lib/mysql/*
 volumes/var/lib/rabbitmq/*

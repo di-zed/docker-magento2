@@ -2,6 +2,10 @@
 
 ###### It can be used for other projects with similar environments too.
 
+## Overview of installing Docker Compose
+
+https://docs.docker.com/compose/install/
+
 ## Structure
 
 **The most interesting folders:**
@@ -19,10 +23,11 @@
 
 1. Copy the *./.env.sample* file to the *./.env*. Check it and edit some parameters if needed.
 2. Copy the *./volumes/root/bash_history/mysql.sample* file to the *./volumes/root/bash_history/mysql* for saving command history in the MySQL container.
-3. Copy the *./volumes/root/bash_history/php.sample* file to the *./volumes/root/bash_history/php* for saving command history in the PHP containers.
-4. **Optional.** Copy the *./volumes/root/.blackfire.ini.sample* file to the *./volumes/root/.blackfire.ini* for configuration Blackfire if you have plans to use it.
-5. **Optional.** Copy the *./docker-compose.local.yml.sample* file to the *./docker-compose.local.yml* and edit it, if you need some changes in the Docker configurations locally.
-6. **Optional.** If your want to have local domains for PhpMyAdmin, RabbitMQ, and MailCatcher, you need to add the data to you local */etc/hosts* file, like:
+3. Copy the *./volumes/root/bash_history/node.sample* file to the *./volumes/root/bash_history/node* for saving command history in the Node container.
+4. Copy the *./volumes/root/bash_history/php.sample* file to the *./volumes/root/bash_history/php* for saving command history in the PHP containers.
+5. **Optional.** Copy the *./volumes/root/.blackfire.ini.sample* file to the *./volumes/root/.blackfire.ini* for configuration Blackfire if you have plans to use it.
+6. **Optional.** Copy the *./docker-compose.local.yml.sample* file to the *./docker-compose.local.yml* and edit it, if you need some changes in the Docker configurations locally.
+7. **Optional.** If your want to have local domains for PhpMyAdmin, RabbitMQ, and MailCatcher, you need to add the data to you local */etc/hosts* file, like:
     ```code
     127.0.0.1 pma.loc
     127.0.0.1 rabbitmq.loc
@@ -41,15 +46,15 @@ docker-compose build
 docker-compose up -d
 ```
 
-Docker Up, if you use some changes for the local environment:
-
-```code
-docker-compose -f docker-compose.yml -f docker-compose.local.yml up -d
-```
-
 **Docker Stop**
 ```code
 docker-compose stop
+```
+
+If you use some changes for the local environment you need to mention it in all **docker-compose** commands, like:
+
+```code
+docker-compose -f docker-compose.yml -f docker-compose.local.yml build
 ```
 
 ## Project setup
@@ -107,7 +112,7 @@ docker-compose stop
 8. **Optional.** Add the configurations to the *docker-compose.local.yml* if you use it.
 9. Restart the Docker Compose or separate containers.
     ```code
-    docker-compose stop && docker-compose -f docker-compose.yml -f docker-compose.local.yml up -d
+    docker-compose stop && docker-compose up -d
     ```
 
 ## xDebug configuration
@@ -221,6 +226,9 @@ docker-compose exec php81 /bin/bash
 docker-compose exec mysql /bin/bash
 ```
 
+If you see an error inside the container, like: *mysql: [Warning] World-writable config file '/etc/mysql/conf.d/my.cnf' is ignored*.
+You can try to change the permissions for the config file: *chmod 644 /etc/mysql/conf.d/my.cnf*.
+
 ### PhpMyAdmin
 
 - URL: http://localhost:8090/, http://pma.loc/
@@ -267,16 +275,12 @@ docker-compose exec rabbitmq /bin/bash
 - Port: 1025
 - URL: http://localhost:1080/, http://mailcatcher.loc/
 
-### Node v6
+### Node v18
+
+- Host: node18
 
 ```code
-docker-compose run node6 /bin/bash
-```
-
-### Node v12
-
-```code
-docker-compose run node12 /bin/bash
+docker-compose exec node18 /bin/bash
 ```
 
 ### Blackfire (optional, see docker-compose.local.yml.sample)

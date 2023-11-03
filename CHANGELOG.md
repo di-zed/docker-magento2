@@ -1,5 +1,9 @@
 # CHANGE LOG
 
+## 1.0.3
+
+- Modified and updated Node container to v18.
+
 ## 1.0.2
 
 - Added "local" folder.

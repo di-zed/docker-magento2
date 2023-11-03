@@ -106,7 +106,6 @@ services:
     hostname: docker-mysql
     ports:
       - "3366:3306"
-#    user: mysql
     volumes:
       - mysql_db:${DIST_MYSQL_DB}:delegated
       - ${VOL_ETC_INPUTRC}:${DIST_ETC_INPUTRC}:cached # Autocomplete functionality to the Terminal
@@ -195,19 +194,19 @@ services:
     networks:
       - internal
 
-  node6:
-    container_name: node6-m2
-    build: ./images/node6
-    hostname: docker-node6
+  node18:
+    container_name: node18-m2
+    build: ./images/node18
+    command: node /server.js
+    hostname: docker-node18
     volumes:
       - var_www:${DIST_VAR_WWW}
-
-  node12:
-    container_name: node12-m2
-    build: ./images/node12
-    hostname: docker-node12
-    volumes:
-      - var_www:${DIST_VAR_WWW}
+      - ${VOL_ETC_INPUTRC}:${DIST_ETC_INPUTRC}:cached # Autocomplete functionality to the Terminal
+      - ${VOL_ROOT_BASH_HISTORY_NODE}:${DIST_ROOT_BASH_HISTORY}:delegated
+      - ./images/node18/server.js:/server.js
+    working_dir: ${DIST_VAR_WWW}
+    networks:
+      - internal
 
 volumes:
 
