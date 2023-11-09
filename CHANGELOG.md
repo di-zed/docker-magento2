@@ -1,5 +1,9 @@
 # CHANGE LOG
 
+## 1.0.4
+
+- Updated containers, fixed versions (Nginx, Varnish, MySQL, PhpMyAdmin, ElasticSearch, Redis, RabbitMQ, MailCatcher).
+
 ## 1.0.3
 
 - Modified and updated Node container to v18.

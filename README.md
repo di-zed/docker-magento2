@@ -84,7 +84,8 @@ docker-compose -f docker-compose.yml -f docker-compose.local.yml build
     }
     
     server {
-        listen 443 ssl http2;
+        listen 443 ssl;
+        http2 on;
         server_name project-domain.loc www.project-domain.loc;
         ssl_certificate /etc/ssl/docker/certs/project_name.crt;
         ssl_certificate_key /etc/ssl/docker/private/project_name.key;
@@ -174,7 +175,7 @@ If debug doesn't work, makes sense to try the next two steps:
 
 ## Containers
 
-### Nginx
+### Nginx (1.25.3)
 
 - Host: nginx
 - Port: 80
@@ -187,7 +188,7 @@ If debug doesn't work, makes sense to try the next two steps:
 docker-compose exec nginx /bin/bash
 ```
 
-### Varnish
+### Varnish (7.4.1)
 
 - Host: varnish
 - Port: 6081
@@ -196,7 +197,7 @@ docker-compose exec nginx /bin/bash
 docker-compose exec varnish /bin/bash
 ```
 
-### PHP 7.4
+### PHP (7.4)
 
 - Host: php74
 - Port: 9000
@@ -205,7 +206,7 @@ docker-compose exec varnish /bin/bash
 docker-compose exec php74 /bin/bash
 ```
 
-### PHP 8.1
+### PHP (8.1)
 
 - Host: php81
 - Port: 9000
@@ -214,7 +215,7 @@ docker-compose exec php74 /bin/bash
 docker-compose exec php81 /bin/bash
 ```
 
-### MySQL
+### MySQL (8.0.35)
 
 - Host: mysql
 - Port: 3306
@@ -229,7 +230,7 @@ docker-compose exec mysql /bin/bash
 If you see an error inside the container, like: *mysql: [Warning] World-writable config file '/etc/mysql/conf.d/my.cnf' is ignored*.
 You can try to change the permissions for the config file: *chmod 644 /etc/mysql/conf.d/my.cnf*.
 
-### PhpMyAdmin
+### PhpMyAdmin (5.2.1)
 
 - URL: http://localhost:8090/, http://pma.loc/
 - Username: {see .env file}
@@ -239,7 +240,7 @@ You can try to change the permissions for the config file: *chmod 644 /etc/mysql
 docker-compose exec phpmyadmin /bin/bash
 ```
 
-### ElasticSearch v7
+### ElasticSearch (7.17.14)
 
 - Host: elasticsearch7
 - Port: 9200
@@ -248,7 +249,7 @@ docker-compose exec phpmyadmin /bin/bash
 docker-compose exec elasticsearch7 /bin/bash
 ```
 
-### Redis
+### Redis (7.2.3)
 
 - Host: redis
 - Port: 6379
@@ -257,7 +258,7 @@ docker-compose exec elasticsearch7 /bin/bash
 docker-compose exec redis /bin/bash
 ```
 
-### RabbitMQ
+### RabbitMQ (3.12.8)
 
 - Host: rabbitmq
 - Port: 5672
@@ -269,13 +270,13 @@ docker-compose exec redis /bin/bash
 docker-compose exec rabbitmq /bin/bash
 ```
 
-### MailCatcher
+### MailCatcher (0.8.2)
 
 - Host: mailcatcher
 - Port: 1025
 - URL: http://localhost:1080/, http://mailcatcher.loc/
 
-### Node v18
+### Node (18.18.0)
 
 - Host: node18
 

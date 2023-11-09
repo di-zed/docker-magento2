@@ -4,7 +4,7 @@ services:
 
   nginx:
     container_name: nginx-m2
-    image: nginx:latest
+    image: nginx:1.25.3
     hostname: docker-nginx
     ports:
       - "80:80"
@@ -14,16 +14,20 @@ services:
       - ./volumes/etc/nginx/conf.d:/etc/nginx/conf.d:cached
       - ./volumes/etc/ssl:/etc/ssl/docker:cached
       - ./volumes/var/log/nginx:/var/log/nginx:delegated
+    restart: on-failure
     depends_on:
       - varnish
       - php74
       - php81
+      - phpmyadmin
+      - rabbitmq
+      - mailcatcher
     networks:
       - internal
 
   varnish:
     container_name: varnish-m2
-    image: varnish:6.6.2
+    image: varnish:7.4.1
     hostname: docker-varnish
     ports:
       - "6081:6081"
@@ -35,7 +39,7 @@ services:
       - ./volumes/usr/local/bin/docker-varnish-entrypoint:/usr/local/bin/docker-varnish-entrypoint:cached
       - ./volumes/var/lib/varnish:/var/lib/varnish:delegated
       - ./volumes/var/log/varnish:/var/log/varnish:delegated
-    restart: always
+    restart: on-failure
     networks:
       - internal
 
@@ -122,7 +126,7 @@ services:
 
   phpmyadmin:
     container_name: phpmyadmin-m2
-    image: phpmyadmin:latest
+    image: phpmyadmin:5.2.1
     hostname: docker-phpmyadmin
     ports:
       - "8090:80"
@@ -158,7 +162,7 @@ services:
 
   redis:
     container_name: redis-m2
-    image: redis:latest
+    image: redis:7.2.3
     hostname: docker-redis
     ports:
       - "6389:6379"
@@ -170,7 +174,7 @@ services:
 
   rabbitmq:
     container_name: rabbitmq-m2
-    image: rabbitmq:3.11.10-management
+    image: rabbitmq:3.12.8-management
     hostname: docker-rabbitmq
     ports:
       - "5672:5672"
@@ -186,7 +190,7 @@ services:
 
   mailcatcher:
     container_name: mailcatcher-m2
-    image: dockage/mailcatcher:latest
+    image: dockage/mailcatcher:0.8.2
     hostname: docker-mailcatcher
     ports:
       - "1080:1080"
