@@ -1,4 +1,4 @@
-FROM php:8.1-fpm
+FROM php:8.2-fpm
 RUN apt-get update && apt-get install -y zlib1g-dev libpng-dev libfreetype6-dev libjpeg62-turbo-dev zlib1g-dev \
     libicu-dev g++ libxml2 libxml2-dev mcrypt libmcrypt-dev libxslt1-dev git sudo libbz2-dev libzip-dev libonig-dev \
     wget gnupg2

@@ -73,11 +73,14 @@ docker-compose -f docker-compose.yml -f docker-compose.local.yml build
    - Move the certificates to the *./volumes/etc/ssl/certs* and *./volumes/etc/ssl/private* folders.
 5. Go to the *./volumes/etc/nginx/conf.d* and create the Nginx configuration for the project.
     ```nginx
+    #resolver 127.0.0.11 valid=30s; # Use Docker's internal DNS
+    #resolver_timeout 5s;
+   
     server {
         listen 80;
         server_name project-domain.loc www.project-domain.loc;
         set $MAGE_ROOT /var/www/project-name;
-        set $FASTCGI_PASS "php81:9000";
+        set $FASTCGI_PASS "php82:9000";
         access_log /var/log/nginx/project_name.access.log;
         error_log /var/log/nginx/project_name.error.log;
         include conf.d/samples/magento243.conf;
@@ -105,6 +108,15 @@ docker-compose -f docker-compose.yml -f docker-compose.local.yml build
         }
     }
     ```
+    In case you encounter the error 502 Bad Gateway (no resolver defined to resolve php82), define a DNS Resolver.
+    Add the resolver directive to your NGINX configuration to specify which DNS server to use. For example:
+    ```nginx
+    resolver 127.0.0.11 valid=30s; # Use Docker's internal DNS
+    resolver_timeout 5s;
+    ```
+    127.0.0.11 is the default internal DNS server.
+    You can verify DNS settings inside the NGINX container:
+    ```cat /etc/resolv.conf```
 6. Add the project host to your local */etc/hosts* file.
     ```code
     127.0.0.1 project-domain.loc
@@ -165,12 +177,12 @@ If debug doesn't work, makes sense to try the next two steps:
     ```code
     ;for PHP v7.4:
     xdebug.remote_host=192.168.220.1
-    ;for PHP v8.1
+    ;for PHP v8.2
     xdebug.client_host=192.168.220.1
     ```
 2. UFW, allow network if needed (in terminal):
     ```code
-    sudo ufw allow in from 192.168.220.0/28 to any port 9000 comment xDebug9000
+    sudo ufw allow in from 192.168.220.0/24 to any port 9000 comment xDebug9000
     ```
 
 ## Containers
@@ -206,16 +218,16 @@ docker-compose exec varnish /bin/bash
 docker-compose exec php74 /bin/bash
 ```
 
-### PHP (8.1)
+### PHP (8.2)
 
-- Host: php81
+- Host: php82
 - Port: 9000
 
 ```code
-docker-compose exec php81 /bin/bash
+docker-compose exec php82 /bin/bash
 ```
 
-### MySQL (8.0.35)
+### MySQL (8.2.0)
 
 - Host: mysql
 - Port: 3306

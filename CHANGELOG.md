@@ -1,5 +1,11 @@
 # CHANGE LOG
 
+## 1.0.5
+
+- Updated MySQL to v8.2.0.
+- Updated PHP to v8.2.
+- Extended subnet to 192.168.220.0/24.
+
 ## 1.0.4
 
 - Updated containers, fixed versions (Nginx, Varnish, MySQL, PhpMyAdmin, ElasticSearch, Redis, RabbitMQ, MailCatcher).

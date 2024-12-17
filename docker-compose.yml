@@ -18,7 +18,7 @@ services:
     depends_on:
       - varnish
       - php74
-      - php81
+      - php82
       - phpmyadmin
       - rabbitmq
       - mailcatcher
@@ -73,15 +73,15 @@ services:
     networks:
       - internal
 
-  php81:
-    container_name: php81-m2
+  php82:
+    container_name: php82-m2
     build:
-      context: ./images/php81
-    hostname: docker-php81
+      context: ./images/php82
+    hostname: docker-php82
     volumes:
       - root_composer:${DIST_ROOT_COMPOSER}:delegated
       - var_www:${DIST_VAR_WWW}
-      - ${VOL_CONFIG_PHP81}:${DIST_CONFIG_PHP}:cached
+      - ${VOL_CONFIG_PHP82}:${DIST_CONFIG_PHP}:cached
       - ${VOL_ETC_INPUTRC}:${DIST_ETC_INPUTRC}:cached # Autocomplete functionality to the Terminal
       - ${VOL_LOG_BLACKFIRE}:${DIST_LOG_BLACKFIRE}:delegated
       - ${VOL_LOG_XDEBUG}:${DIST_LOG_XDEBUG}:delegated
@@ -253,4 +253,4 @@ networks:
     ipam:
       driver: default
       config:
-        - subnet: 192.168.220.0/28 # 192.168.220.1 - 192.168.220.14
+        - subnet: 192.168.220.0/24 # 192.168.220.1 - 192.168.220.254
