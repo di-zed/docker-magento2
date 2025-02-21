@@ -1,11 +1,11 @@
 FROM php:8.2-fpm
 RUN apt-get update && apt-get install -y zlib1g-dev libpng-dev libfreetype6-dev libjpeg62-turbo-dev zlib1g-dev \
     libicu-dev g++ libxml2 libxml2-dev mcrypt libmcrypt-dev libxslt1-dev git sudo libbz2-dev libzip-dev libonig-dev \
-    wget gnupg2
-RUN pecl install xdebug-3.2.1 mcrypt
+    wget gnupg2 libz-dev librabbitmq-dev libssl-dev graphviz
+RUN pecl install xdebug-3.2.1 mcrypt amqp redis
 RUN docker-php-ext-configure gd --with-freetype --with-jpeg
-RUN docker-php-ext-install pdo_mysql mysqli intl dom mbstring gd soap zip xsl bcmath exif bz2 opcache sockets \
-    && docker-php-ext-enable xdebug mcrypt
+RUN docker-php-ext-install pdo_mysql mysqli intl dom mbstring gd soap zip xsl bcmath exif bz2 opcache sockets ftp \
+    && docker-php-ext-enable xdebug mcrypt amqp redis
 RUN docker-php-ext-configure pcntl --enable-pcntl \
   && docker-php-ext-install pcntl
 # Composer:

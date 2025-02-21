@@ -83,7 +83,7 @@ docker-compose -f docker-compose.yml -f docker-compose.local.yml build
         set $FASTCGI_PASS "php82:9000";
         access_log /var/log/nginx/project_name.access.log;
         error_log /var/log/nginx/project_name.error.log;
-        include conf.d/samples/magento243.conf;
+        include conf.d/samples/magento247.conf;
     }
     
     server {

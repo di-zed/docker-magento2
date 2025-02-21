@@ -1,5 +1,11 @@
 # CHANGE LOG
 
+## 1.0.6
+
+- Improved Dockerfile for the PHP v8.2.
+- Fixed the phpinfo stuff.
+- Added Makefile.
+
 ## 1.0.5
 
 - Updated MySQL to v8.2.0.
